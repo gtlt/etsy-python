@@ -19,7 +19,7 @@ $ python setup.py build
 $ sudo python setup.py install
 </pre>
 
-## Simple Example
+## Example without authentication
 
 To use, first [register for an Etsy developer key](http://developer.etsy.com/).
 Below is an example session. 
@@ -34,6 +34,29 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> api = Etsy('YOUR-API-KEY-HERE')
 >>> api.getFrontFeaturedListings(offset=10, limit=1)[0]['title']
 'Artists Eco Journal -  Landscape Watercolor - Rustic Vegan Hemp and Recycled Rubber'
+</pre>
+
+
+## Example with authentication
+
+To use, first [register for an Etsy developer key](http://developer.etsy.com/).
+Below is an example session.
+
+<pre>
+$ python
+python
+Python 2.7.11+ (default, Apr 17 2016, 14:00:29) 
+[GCC 5.3.1 20160413] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from etsy import Etsy
+>>> from etsy.oauth import EtsyOAuthClient
+>>> from etsy import EtsyEnvProduction
+>>> etsy_env = EtsyEnvProduction()
+>>> etsy_oauth_client = EtsyOAuthClient('consumer_token','consumer_secret')
+>>> signin_url = etsy_oauth_client.get_signin_url()
+>>> etsy_oauth_client.set_oauth_verifier(verifier_received_from_signin_url)
+>>> etsy_api = Etsy(etsy_oauth_client=etsy_oauth_client, etsy_env=etsy_env)
+>>> etsy_api.getUser(user_id="__SELF__")
 </pre>
 
 
