@@ -13,25 +13,24 @@ from _multipartformdataencode import encode_multipart_formdata
 missing = object()
 
 
-
-
 class TypeChecker(object):
+
     def __init__(self):
         self.checkers = {
             'int': self.check_int,
             'float': self.check_float,
             'string': self.check_string,
-            }
-
+        }
 
     def __call__(self, method, **kwargs):
         params = method['params']
         for k, v in kwargs.items():
-            if k == 'includes': continue
+            if k == 'includes':
+                continue
 
             if k not in params:
                 raise ValueError('Unexpected argument: %s=%s' % (k, v))
-            
+
             t = params[k]
             checker = self.checkers.get(t, None) or self.compile(t)
             ok, converted = checker(v)
@@ -39,7 +38,6 @@ class TypeChecker(object):
                 raise ValueError(
                     "Bad value for parameter %s of type '%s' - %s" % (k, t, v))
             kwargs[k] = converted
-
 
     def compile(self, t):
         if t.startswith('enum'):
@@ -49,37 +47,32 @@ class TypeChecker(object):
         self.checkers[t] = f
         return f
 
-
     def compile_enum(self, t):
         terms = [x.strip() for x in t[5:-1].split(',')]
+
         def check_enum(value):
             return (value in terms), value
         return check_enum
 
-
     def always_ok(self, value):
         return True, value
 
-
     def check_int(self, value):
-        if isinstance(value, long):
+        if isinstance(value, long):  # noqa
             return True, value
         return isinstance(value, int), value
 
-    
     def check_float(self, value):
         if isinstance(value, int):
             return True, value
         return isinstance(value, float), value
 
-    
     def check_string(self, value):
-        return isinstance(value, basestring), value
-
-
+        return isinstance(value, basestring), value  # noqa
 
 
 class APIMethod(object):
+
     def __init__(self, api, spec):
         """
         Parameters:
@@ -92,7 +85,7 @@ class APIMethod(object):
               'string', 'materials': 'array(string)', 'shipping_template_id':
               'int', 'quantity': 'int', 'shop_section_id': 'int'}, 'defaults':
               {'materials': None, 'shop_section_id': None}, 'type': 'Listing',
-              'description': 'Creates a new Listing'} 
+              'description': 'Creates a new Listing'}
         """
 
         self.api = api
@@ -100,13 +93,11 @@ class APIMethod(object):
         self.type_checker = self.api.type_checker
         self.__doc__ = self.spec['description']
         self.compiled = False
-    
 
     def __call__(self, *args, **kwargs):
         if not self.compiled:
             self.compile()
         return self.invoke(*args, **kwargs)
-
 
     def compile(self):
         uri = self.spec['uri']
@@ -117,7 +108,6 @@ class APIMethod(object):
         self.uri_format = uri
 
         self.compiled = True
-
 
     def invoke(self, *args, **kwargs):
         if args and not self.positionals:
@@ -142,13 +132,12 @@ class APIMethod(object):
             del kwargs[p]
 
         self.type_checker(self.spec, **kwargs)
-        return self.api._get(self.spec['http_method'], self.uri_format % ps, **kwargs)
-
-
+        return (self.api._get(self.spec['http_method'],
+                              self.uri_format % ps, **kwargs))
 
 
 class MethodTableCache(object):
-    max_age = 60*60*24
+    max_age = 60 * 60 * 24
 
     def __init__(self, api, method_cache):
         self.api = api
@@ -156,22 +145,18 @@ class MethodTableCache(object):
         self.used_cache = False
         self.wrote_cache = False
 
-
     def resolve_file(self, method_cache):
         if method_cache is missing:
             return self.default_file()
         return method_cache
 
-
     def etsy_home(self):
         return self.api.etsy_home()
-
 
     def default_file(self):
         etsy_home = self.etsy_home()
         d = etsy_home if os.path.isdir(etsy_home) else tempfile.gettempdir()
         return os.path.join(d, 'methods.%s.json' % self.api.api_version)
-
 
     def get(self):
         ms = self.get_cached()
@@ -179,7 +164,6 @@ class MethodTableCache(object):
             ms = self.api.get_method_table()
             self.cache(ms)
         return ms
-        
 
     def get_cached(self):
         if self.filename is None or not os.path.isfile(self.filename):
@@ -193,10 +177,10 @@ class MethodTableCache(object):
             self.api.log('Reading method table cache: %s' % self.filename)
             return json.loads(f.read())
 
-
     def cache(self, methods):
         if self.filename is None:
-            self.api.log('Method table caching disabled, not writing new cache.')
+            self.api.log(
+                'Method table caching disabled, not writing new cache.')
             return
         with open(self.filename, 'w') as f:
             json.dump(methods, f)
@@ -204,22 +188,21 @@ class MethodTableCache(object):
             self.api.log('Wrote method table cache: %s' % self.filename)
 
 
-
-
 class API(object):
-    def __init__(self, api_key='', key_file=None, method_cache=missing, 
+
+    def __init__(self, api_key='', key_file=None, method_cache=missing,
                  log=None):
         """
-        Creates a new API instance. When called with no arguments, 
-        reads the appropriate API key from the default ($HOME/.etsy/keys) 
-        file. 
+        Creates a new API instance. When called with no arguments,
+        reads the appropriate API key from the default ($HOME/.etsy/keys)
+        file.
 
         Parameters:
             api_key      - An explicit API key to use.
-            key_file     - A file to read the API keys from. 
-            method_cache - A file to save the API method table in for 
+            key_file     - A file to read the API keys from.
+            method_cache - A file to save the API method table in for
                            24 hours. This speeds up the creation of API
-                           objects. 
+                           objects.
             log          - An callable that accepts a string parameter.
                            Receives log messages. No logging is done if
                            this is None.
@@ -227,9 +210,9 @@ class API(object):
         Only one of api_key and key_file may be passed.
 
         If method_cache is explicitly set to None, no method table
-        caching is performed. If the parameter is not passed, a file in 
-        $HOME/.etsy is used if that directory exists. Otherwise, a 
-        temp file is used. 
+        caching is performed. If the parameter is not passed, a file in
+        $HOME/.etsy is used if that directory exists. Otherwise, a
+        temp file is used.
         """
         if not getattr(self, 'api_url', None):
             raise AssertionError('No api_url configured.')
@@ -244,10 +227,11 @@ class API(object):
             raise AssertionError('Keys can be read from a file or passed, '
                                  'but not both.')
 
-        if api_key:
-            self.api_key = api_key
-        else:
-            self.api_key = self._read_key(key_file)
+        if self.etsy_oauth_client is None:
+            if api_key:
+                self.api_key = api_key
+            else:
+                self.api_key = self._read_key(key_file)
 
         self.log = log or self._ignore
         if not callable(self.log):
@@ -258,14 +242,11 @@ class API(object):
         self.decode = json.loads
 
         self.log('Creating %s Etsy API, base url=%s.' % (
-                self.api_version, self.api_url))
+            self.api_version, self.api_url))
         self._get_methods(method_cache)
-
-
 
     def _ignore(self, _):
         pass
-
 
     def _get_methods(self, method_cache):
         self.method_cache = MethodTableCache(self, method_cache)
@@ -277,14 +258,11 @@ class API(object):
 
         # self.log('API._get_methods: self._methods = %r' % self._methods)
 
-
     def etsy_home(self):
         return os.path.expanduser('~/.etsy')
 
-
     def get_method_table(self):
         return self._get('GET', '/')
-
 
     def _read_key(self, key_file):
         key_file = key_file or os.path.join(self.etsy_home(), 'keys')
@@ -294,22 +272,21 @@ class API(object):
                 'pass an API key explicitly.' % key_file)
 
         gs = {}
-        execfile(key_file, gs)
+        execfile(key_file, gs)  # noqa
         return gs[self.api_version]
-        
 
     def _get_url(self, url, http_method, content_type, body):
         self.log("API._get_url: url = %r" % url)
         with closing(urllib2.urlopen(url)) as f:
-            return f.read() 
-  
+            return f.read()
 
     def _get(self, http_method, url, **kwargs):
-        kwargs.update(dict(api_key=self.api_key))
+        if self.etsy_oauth_client is None:
+            kwargs.update(dict(api_key=self.api_key))
 
         if http_method == 'GET':
             url = '%s%s?%s' % (self.api_url, url, urlencode(kwargs))
-            body = None
+            body = ''
             content_type = None
         elif http_method == 'POST':
             url = '%s%s' % (self.api_url, url)
@@ -327,13 +304,14 @@ class API(object):
         self.last_url = url
         data = self._get_url(url, http_method, content_type, body)
 
-        self.log('API._get: http_method = %r, url = %r, data = %r' % (http_method, url, data))
+        self.log('API._get: http_method = %r, url = %r, data = %r' %
+                 (http_method, url, data))
 
         try:
             self.data = self.decode(data)
         except json.JSONDecodeError:
-            raise ValueError('Could not decode response from Etsy as JSON: %r' % data)
+            raise ValueError(
+                'Could not decode response from Etsy as JSON: %r' % data)
 
         self.count = self.data['count']
         return self.data['results']
-
