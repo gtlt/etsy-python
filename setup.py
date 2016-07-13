@@ -26,5 +26,6 @@ setup(
     install_requires=['simplejson >= 2.0'],
     extras_require={
         'OAuth': ["oauth2>=1.2.0"],
-    }
+    },
+    package_data={'etsy': ['README.md']},
 )
