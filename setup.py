@@ -14,7 +14,7 @@ test_requirements = [
 
 setup(
     name='pyetsy',
-    version='0.4.1',
+    version='0.4.2',
     author='Dan McKinley & Fulfil.IO Inc.',
     author_email='dan@etsy.com,support@fulfil.io',
     description='Python access to the Etsy API',
@@ -26,5 +26,6 @@ setup(
     install_requires=['simplejson >= 2.0'],
     extras_require={
         'OAuth': ["oauth2>=1.2.0"],
-    }
+    },
+    package_data={'etsy': ['README.md']},
 )
