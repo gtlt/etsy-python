@@ -59,6 +59,6 @@ class EtsyOAuthClient(oauth.Client):
         d = dict(parse_qsl(content))
 
         try:
-            return oauth.Token(d['oauth_token'], d['oauth_token_secret'])
+            return EtsyOAuthToken(d['oauth_token'], d['oauth_token_secret'])
         except KeyError:
             return None
