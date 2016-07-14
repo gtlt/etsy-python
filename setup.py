@@ -6,6 +6,9 @@ this_dir = os.path.realpath(os.path.dirname(__file__))
 long_description = open(os.path.join(this_dir, 'README.md'), 'r').read()
 
 requirements = [
+    'httplib2',
+    'oauth2==1.9.0.post1',
+    'simplejson',
 ]
 
 test_requirements = [
@@ -14,7 +17,7 @@ test_requirements = [
 
 setup(
     name='pyetsy',
-    version='0.4.2',
+    version='0.4.3',
     author='Dan McKinley & Fulfil.IO Inc.',
     author_email='dan@etsy.com,support@fulfil.io',
     description='Python access to the Etsy API',
