@@ -7,8 +7,8 @@ long_description = open(os.path.join(this_dir, 'README.md'), 'r').read()
 
 requirements = [
     'httplib2',
-    'oauth2==1.9.0.post1',
-    'simplejson',
+    'oauth2>=1.2.0',
+    'simplejson>=2.0',
 ]
 
 test_requirements = [
@@ -26,9 +26,6 @@ setup(
     packages=['etsy'],
     long_description=long_description,
     test_suite='test',
-    install_requires=['simplejson >= 2.0'],
-    extras_require={
-        'OAuth': ["oauth2>=1.2.0"],
-    },
+    install_requires=requirements,
     package_data={'etsy': ['README.md']},
 )
