@@ -101,10 +101,10 @@ class APIMethod(object):
 
     def compile(self):
         uri = self.spec['uri']
-        self.positionals = re.findall('{(.*)}', uri)
+        self.positionals = re.findall(':([_\w]+)', uri)
 
         for p in self.positionals:
-            uri = uri.replace('{%s}' % p, '%%(%s)s' % p)
+            uri = uri.replace(':%s' % p, '%%(%s)s' % p)
         self.uri_format = uri
 
         self.compiled = True
