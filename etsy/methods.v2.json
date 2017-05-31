@@ -4203,5 +4203,61 @@
     },
     "type": "Treasury",
     "description": "Get a user's Treasuries. <strong>Note:</strong> The <code>treasury_r</code> permission scope is required in order to display private Treasuries for a user when the boolean parameter <code>include_private</code> is <code>true</code>."
+  },
+  {
+    "name": "getInventory",
+    "uri": "/listings/:listing_id/inventory",
+    "visibility": "public",
+    "http_method": "GET",
+    "params": {
+      "listing_id": "int",
+      "write_missing_inventory": "boolean"
+    },
+    "defaults": null,
+    "type": "Listings",
+    "description": "Get the inventory for a listing."
+  },
+  {
+    "name": "updateInventory",
+    "uri": "/listings/:listing_id/inventory",
+    "visibility": "private",
+    "http_method": "PUT",
+    "params": {
+      "listing_id": "int",
+      "products": "stringJSON",
+      "price_on_property": "array(int)",
+      "quantity_on_property": "array(int)",
+      "sku_on_property": "array(int)"
+    },
+    "defaults": null,
+    "type": "Listings",
+    "description": "Update the inventory for a listing."
+  },
+  {
+    "name": "getProduct",
+    "uri": "/listings/:listing_id/products/:product_id",
+    "visibility": "public",
+    "http_method": "GET",
+    "params": {
+      "listing_id": "int",
+      "product_id": "int"
+    },
+    "defaults": null,
+    "type": "Listings",
+    "description": "Get a specific product for a listing."
+  },
+  {
+    "name": "getOffering",
+    "uri": "/listings/:listing_id/products/:product_id/offerings/:offering_id",
+    "visibility": "public",
+    "http_method": "GET",
+    "params": {
+      "listing_id": "int",
+      "product_id": "int",
+      "offering_id": "int"
+    },
+    "defaults": null,
+    "type": "Listings",
+    "description": "Get a specific offering for a product."
   }
 ]
