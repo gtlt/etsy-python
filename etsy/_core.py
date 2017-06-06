@@ -300,6 +300,10 @@ class API(object):
                     fields.append((name, str(value)))
 
             content_type, body = encode_multipart_formdata(fields, files)
+        else:
+            url = '%s%s' % (self.api_url, url)
+            body = urlencode(kwargs)
+            content_type = 'application/x-www-form-urlencoded'
 
         self.last_url = url
         data = self._get_url(url, http_method, content_type, body)

@@ -7,8 +7,10 @@ long_description = open(os.path.join(this_dir, 'README.md'), 'r').read()
 
 requirements = [
     'httplib2',
-    'oauth2>=1.2.0',
-    'simplejson>=2.0',
+    'oauth2==1.9.0.post1',
+    'simplejson',
+    'requests',
+    'requests_oauthlib',
 ]
 
 test_requirements = [
@@ -17,7 +19,7 @@ test_requirements = [
 
 setup(
     name='pyetsy',
-    version='0.4.7',
+    version='0.4.8',
     author='Dan McKinley & Fulfil.IO Inc.',
     author_email='dan@etsy.com,support@fulfil.io',
     description='Python access to the Etsy API',
