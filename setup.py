@@ -9,6 +9,8 @@ requirements = [
     'httplib2',
     'oauth2==1.9.0.post1',
     'simplejson',
+    'requests',
+    'requests_oauthlib',
 ]
 
 test_requirements = [
