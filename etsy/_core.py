@@ -9,6 +9,8 @@ import tempfile
 import time
 from _multipartformdataencode import encode_multipart_formdata
 
+from .exceptions import EtsyConcurrencyError, EtsyAPILimitError
+
 
 missing = object()
 
@@ -314,6 +316,10 @@ class API(object):
         try:
             self.data = self.decode(data)
         except json.JSONDecodeError:
+            if 'being edited by another process' in data:
+                raise EtsyConcurrencyError(data)
+            if 'exceeded your quota' in data:
+                raise EtsyAPILimitError(data)
             raise ValueError(
                 'Could not decode response from Etsy as JSON: %r' % data)
 
