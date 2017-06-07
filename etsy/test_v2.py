@@ -30,6 +30,7 @@ def write_config_file(oauth_token):
         config_file.write("oauth_token_key = %r\n" % oauth_token.key)
         config_file.write("oauth_token_secret = %r\n" % oauth_token.secret)
 
+
 try:
     import config
 except ImportError:
@@ -93,5 +94,6 @@ def testCreateListing():
                                          image=config.image_file)
 
     print "Result of uploading image: %r" % result
+
 
 testCreateListing()
