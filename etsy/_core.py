@@ -1,13 +1,14 @@
-from __future__ import with_statement
 from contextlib import closing
 import simplejson as json
-import urllib2
-from urllib import urlencode
+# import urllib2
+# from urllib import urlencode
+import urllib.request, urllib.error, urllib.parse
+from urllib.parse import urlencode
 import os
 import re
 import tempfile
 import time
-from _multipartformdataencode import encode_multipart_formdata
+from ._multipartformdataencode import encode_multipart_formdata
 
 from .exceptions import EtsyConcurrencyError, EtsyAPILimitError
 
@@ -26,7 +27,7 @@ class TypeChecker(object):
 
     def __call__(self, method, **kwargs):
         params = method['params']
-        for k, v in kwargs.items():
+        for k, v in list(kwargs.items()):
             if k == 'includes':
                 continue
 
@@ -60,7 +61,7 @@ class TypeChecker(object):
         return True, value
 
     def check_int(self, value):
-        if isinstance(value, long):  # noqa
+        if isinstance(value, int):  # noqa
             return True, value
         return isinstance(value, int), value
 
@@ -70,7 +71,7 @@ class TypeChecker(object):
         return isinstance(value, float), value
 
     def check_string(self, value):
-        return isinstance(value, basestring), value  # noqa
+        return isinstance(value, str), value  # noqa
 
 
 class APIMethod(object):
@@ -274,12 +275,12 @@ class API(object):
                 'pass an API key explicitly.' % key_file)
 
         gs = {}
-        execfile(key_file, gs)  # noqa
+        exec(compile(open(key_file).read(), key_file, 'exec'), gs)  # noqa
         return gs[self.api_version]
 
     def _get_url(self, url, http_method, content_type, body):
         self.log("API._get_url: url = %r" % url)
-        with closing(urllib2.urlopen(url)) as f:
+        with closing(urllib.request.urlopen(url)) as f:
             return f.read()
 
     def _get(self, http_method, url, **kwargs):
@@ -295,7 +296,7 @@ class API(object):
             fields = []
             files = []
 
-            for name, value in kwargs.items():
+            for name, value in list(kwargs.items()):
                 if hasattr(value, 'read'):
                     files.append((name, value.name, value.read()))
                 else:

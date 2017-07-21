@@ -17,7 +17,7 @@ def my_log(msg):
 
 
 def write_config_file(oauth_token):
-    os.umask(0077)  # noqa
+    os.umask(0o077)  # noqa
     config_file = file('config.py', 'w')
 
     if config:
@@ -56,7 +56,7 @@ if (hasattr(config, 'oauth_token_key') and
         secret=config.oauth_token_secret)
 else:
     webbrowser.open(oauth_client.get_signin_url())
-    oauth_client.set_oauth_verifier(raw_input('Enter OAuth verifier: '))
+    oauth_client.set_oauth_verifier(eval(input('Enter OAuth verifier: ')))
     write_config_file(oauth_client.token)
 
 etsy_api = Etsy(etsy_oauth_client=oauth_client, etsy_env=etsy_env, log=my_log)
@@ -64,17 +64,17 @@ etsy_api = Etsy(etsy_oauth_client=oauth_client, etsy_env=etsy_env, log=my_log)
 # print 'oauth access token: (key=%r; secret=%r)' %
 # (oauth_client.token.key, oauth_client.token.secret)
 
-print('findAllShopListingsActive => %r' % etsy_api.findAllShopListingsActive(
-    shop_id=config.user_id, sort_on='created', limit=1))
+print(('findAllShopListingsActive => %r' % etsy_api.findAllShopListingsActive(
+    shop_id=config.user_id, sort_on='created', limit=1)))
 
 # print('getListing => %r' % etsy_api.getListing(listing_id=63067548))
 
-print('findAllUserShippingTemplates => %r' %
-      etsy_api.findAllUserShippingTemplates(user_id=config.user_id))
+print(('findAllUserShippingTemplates => %r' %
+      etsy_api.findAllUserShippingTemplates(user_id=config.user_id)))
 
 
 def testCreateListing():
-    print "Creating listing..."
+    print("Creating listing...")
 
     result = etsy_api.createListing(
         description=config.description,
@@ -88,12 +88,12 @@ def testCreateListing():
 
     listing_id = result[0]['listing_id']
 
-    print "Created listing with listing id %d" % listing_id
+    print(("Created listing with listing id %d" % listing_id))
 
     result = etsy_api.uploadListingImage(listing_id=listing_id,
                                          image=config.image_file)
 
-    print "Result of uploading image: %r" % result
+    print(("Result of uploading image: %r" % result))
 
 
 testCreateListing()

@@ -1,9 +1,9 @@
-import urllib  # noqa
-from _core import API, missing
-from etsy_env import EtsyEnvProduction
+# import urllib  # noqa
+from ._core import API, missing
+from .etsy_env import EtsyEnvProduction
 
 try:
-    from urlparse import parse_qsl  # noqa
+    from urllib.parse import parse_qsl  # noqa
 except ImportError:
     from cgi import parse_qsl  # noqa
 

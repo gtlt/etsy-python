@@ -1,9 +1,8 @@
-from __future__ import with_statement
 from etsy._core import API, MethodTableCache, missing
 from cgi import parse_qs
-from urlparse import urlparse
+from urllib.urlparse import urlparse
 import os
-from util import Test
+from .util import Test
 import tempfile
 from etsy.oauth import EtsyOAuthClient
 
@@ -44,7 +43,6 @@ class MockAPI(API):
 
 
 class MockLog(object):
-
     def __init__(self, test):
         self.lines = []
         self.test = test
@@ -59,7 +57,6 @@ class MockLog(object):
 
 
 class CoreTests(Test):
-
     def setUp(self):
         self.api = MockAPI('apikey', log=MockLog(self))
 
@@ -76,11 +73,11 @@ class CoreTests(Test):
 
     def test_results_returned(self):
         x = self.api.testMethod(test_id='foo')
-        self.assertEquals(x, [3])
+        self.assertEqual(x, [3])
 
     def test_docstring_set(self):
-        self.assertEquals(self.api.testMethod.__doc__,
-                          'test method.')
+        self.assertEqual(self.api.testMethod.__doc__,
+                         'test method.')
 
     def test_api_url_required(self):
         msg = self.assertRaises(AssertionError, API, '')
@@ -194,13 +191,11 @@ class CoreTests(Test):
 
 
 class MockAPI_NoMethods(MockAPI):
-
     def _get_methods(self, method_cache):
         pass
 
 
 class MethodTableCacheTests(Test):
-
     def cache(self, method_cache=missing):
         self.api = MockAPI_NoMethods('apikey')
         self._cache = MethodTableCache(self.api, method_cache)
